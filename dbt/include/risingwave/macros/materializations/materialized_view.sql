@@ -26,14 +26,14 @@
 
   {% if full_refresh_mode %}
     {{ adapter.drop_relation(tmp_relation) }}
-    {% call statement('main') -%}      
-      {{ risingwave__create_materialized_view_as(tmp_relation, sql | replace(schema, custom_schema)) }}
+    {% call statement('main') -%}
+       {{ risingwave__create_materialized_view_as(target_relation, sql) }}
     {%- endcall %}
 
     {{ create_indexes(tmp_relation) }}
 
   {% elif old_relation is none %}
-    {% call statement('main') -%}      
+    {% call statement('main') -%}
       {{ risingwave__create_materialized_view_as(target_relation, sql) }}
     {%- endcall %}
 
