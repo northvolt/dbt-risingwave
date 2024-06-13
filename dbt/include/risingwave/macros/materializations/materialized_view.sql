@@ -25,11 +25,11 @@
   {{ run_hooks(pre_hooks, inside_transaction=True) }}
 
   {% if full_refresh_mode %}
-    {{ log("Full-refresh materialization requested for " ~ target_relation) }}
-    {{ log("Creating temporary materialization: " ~ tmp_relation) }}
+    {{ log("Full-refresh materialization requested for " ~ target_relation, info=True) }}
+    {{ log("Creating temporary materialization: " ~ tmp_relation, info=True) }}
     {{ adapter.drop_relation(tmp_relation) }}
     {% call statement('main') -%}
-       {{ risingwave__create_materialized_view_as(target_relation, sql) }}
+       {{ risingwave__create_materialized_view_as(tmp_relation, sql) }}
     {%- endcall %}
 
     {{ create_indexes(tmp_relation) }}
