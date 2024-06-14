@@ -3,7 +3,13 @@
   {%- set identifier = model['alias'] -%}
   {%- set full_refresh_mode = should_full_refresh() -%}
 
-  {%- set custom_schema = schema~"__risingwave_dbt_tmp" -%}
+
+
+  {%- if not schema.endswith("__risingwave_dbt_tmp") -%}
+     {%- set custom_schema = schema~"__risingwave_dbt_tmp" -%}
+    {%- else -%}
+         {%- set custom_schema = schema -%}
+  {%- endif -%}
 
   {{ adapter.create_schema(api.Relation.create(database=database, schema=custom_schema)) }}
 
@@ -29,7 +35,7 @@
     {{ log("Creating temporary materialization: " ~ tmp_relation, info=True) }}
     {{ adapter.drop_relation(tmp_relation) }}
     {% call statement('main') -%}
-       {{ risingwave__create_materialized_view_as(tmp_relation, sql) }}
+       {{ risingwave__create_materialized_view_as(target_relation, sql) }}
     {%- endcall %}
 
     {{ create_indexes(tmp_relation) }}
